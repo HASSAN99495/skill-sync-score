@@ -68,7 +68,12 @@ const ScoreBreakdown: React.FC<ScoreBreakdownProps> = ({ scoreBreakdown }) => {
               <Progress 
                 value={category.score} 
                 className="h-2" 
-                indicatorClassName={getScoreColor(category.score)} 
+                // Replace indicatorClassName with a className that applies to the Progress component
+                // The indicator style should be handled via CSS variables or other methods
+                // depending on how the Progress component is implemented
+                style={{ 
+                  '--progress-foreground': getScoreColor(category.score).replace('bg-', '') 
+                } as React.CSSProperties}
               />
             </div>
           ))}

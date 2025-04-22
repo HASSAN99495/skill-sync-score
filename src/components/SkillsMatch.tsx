@@ -28,23 +28,23 @@ const SkillsMatch: React.FC<SkillsMatchProps> = ({
   );
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-medium">Skills Analysis</CardTitle>
+    <Card className="glass-card border-violet-500/20">
+      <CardHeader className="pb-2 bg-gradient-to-r from-violet-900/30 to-indigo-900/30">
+        <CardTitle className="text-lg gradient-heading">Skills Analysis</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {matchedSkills.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium mb-2 flex items-center">
-                <CheckIcon size={14} className="mr-1 text-green-500" />
+              <h4 className="text-sm font-medium mb-2 flex items-center text-violet-400">
+                <CheckIcon size={14} className="mr-1 text-green-400" />
                 Matching Skills
               </h4>
               <div className="flex flex-wrap gap-2">
                 {matchedSkills.map((skill, index) => (
                   <div
                     key={index}
-                    className="bg-green-100 text-green-800 text-xs px-2.5 py-1 rounded"
+                    className="bg-green-900/30 text-green-400 text-xs px-2.5 py-1 rounded-full border border-green-400/20"
                   >
                     {skill.name}
                   </div>
@@ -55,12 +55,12 @@ const SkillsMatch: React.FC<SkillsMatchProps> = ({
           
           {unmatchedSkills.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium mb-2">Other Skills</h4>
+              <h4 className="text-sm font-medium mb-2 text-gray-400">Other Skills</h4>
               <div className="flex flex-wrap gap-2">
                 {unmatchedSkills.map((skill, index) => (
                   <div
                     key={index}
-                    className="bg-gray-100 text-gray-800 text-xs px-2.5 py-1 rounded"
+                    className="bg-gray-800 text-gray-300 text-xs px-2.5 py-1 rounded-full border border-gray-700"
                   >
                     {skill.name}
                   </div>
@@ -71,15 +71,15 @@ const SkillsMatch: React.FC<SkillsMatchProps> = ({
           
           {missingRequiredSkills.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium mb-2 flex items-center">
-                <XIcon size={14} className="mr-1 text-red-500" />
+              <h4 className="text-sm font-medium mb-2 flex items-center text-violet-400">
+                <XIcon size={14} className="mr-1 text-red-400" />
                 Missing Required Skills
               </h4>
               <div className="flex flex-wrap gap-2">
                 {missingRequiredSkills.map((skill, index) => (
                   <div
                     key={index}
-                    className="bg-red-100 text-red-800 text-xs px-2.5 py-1 rounded"
+                    className="bg-red-900/30 text-red-400 text-xs px-2.5 py-1 rounded-full border border-red-400/20"
                   >
                     {skill}
                   </div>
@@ -90,15 +90,15 @@ const SkillsMatch: React.FC<SkillsMatchProps> = ({
           
           {missingPreferredSkills.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium mb-2 flex items-center">
-                <XIcon size={14} className="mr-1 text-yellow-500" />
+              <h4 className="text-sm font-medium mb-2 flex items-center text-violet-400">
+                <XIcon size={14} className="mr-1 text-yellow-400" />
                 Missing Preferred Skills
               </h4>
               <div className="flex flex-wrap gap-2">
                 {missingPreferredSkills.map((skill, index) => (
                   <div
                     key={index}
-                    className="bg-yellow-100 text-yellow-800 text-xs px-2.5 py-1 rounded"
+                    className="bg-yellow-900/30 text-yellow-400 text-xs px-2.5 py-1 rounded-full border border-yellow-400/20"
                   >
                     {skill}
                   </div>

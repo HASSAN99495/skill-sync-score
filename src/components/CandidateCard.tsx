@@ -17,27 +17,27 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
   onSelect 
 }) => {
   const getScoreClass = (score: number) => {
-    if (score >= 80) return 'bg-green-100 text-green-800';
-    if (score >= 60) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
+    if (score >= 80) return 'bg-green-900/30 text-green-400 border border-green-400/20';
+    if (score >= 60) return 'bg-yellow-900/30 text-yellow-400 border border-yellow-400/20';
+    return 'bg-red-900/30 text-red-400 border border-red-400/20';
   };
 
   return (
     <Card 
-      className={`mb-4 transition-all duration-200 cursor-pointer hover:shadow-md ${
-        isSelected ? 'border-indigo-500 ring-1 ring-indigo-500' : ''
+      className={`mb-4 transition-all duration-200 cursor-pointer hover:shadow-md glass-card border-violet-500/20 ${
+        isSelected ? 'border-violet-400 ring-1 ring-violet-400' : ''
       }`}
       onClick={() => onSelect(candidate)}
     >
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center">
-            <div className="bg-indigo-100 p-2 rounded-full mr-3">
-              <UserIcon size={20} className="text-indigo-600" />
+            <div className="bg-violet-900/60 p-2 rounded-full mr-3 border border-violet-400/20">
+              <UserIcon size={20} className="text-violet-400" />
             </div>
             <div>
-              <h3 className="font-medium">{candidate.name}</h3>
-              <p className="text-sm text-gray-500">{candidate.email}</p>
+              <h3 className="font-medium text-white">{candidate.name}</h3>
+              <p className="text-sm text-gray-400">{candidate.email}</p>
             </div>
           </div>
           <div>
@@ -47,16 +47,16 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
           </div>
         </div>
         
-        <div className="mt-3 pt-3 border-t">
-          <div className="text-sm text-gray-500 mb-2">Skills</div>
+        <div className="mt-3 pt-3 border-t border-white/10">
+          <div className="text-sm text-gray-400 mb-2">Skills</div>
           <div className="flex flex-wrap gap-1.5">
             {candidate.skills.slice(0, 5).map((skill, index) => (
               <div 
                 key={index} 
                 className={`text-xs font-medium px-2 py-1 rounded-full flex items-center ${
                   skill.isMatch 
-                    ? 'bg-indigo-100 text-indigo-800' 
-                    : 'bg-gray-100 text-gray-700'
+                    ? 'bg-violet-900/30 text-violet-300 border border-violet-400/20' 
+                    : 'bg-gray-800 text-gray-400 border border-gray-700'
                 }`}
               >
                 {skill.isMatch && <CheckIcon size={10} className="mr-1" />}
@@ -64,7 +64,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
               </div>
             ))}
             {candidate.skills.length > 5 && (
-              <div className="text-xs font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-700">
+              <div className="text-xs font-medium px-2 py-1 rounded-full bg-gray-800 text-gray-400 border border-gray-700">
                 +{candidate.skills.length - 5} more
               </div>
             )}
@@ -73,14 +73,14 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
         
         <div className="mt-3 pt-2 flex justify-between">
           <div className="flex gap-2">
-            <Button variant="ghost" size="sm" className="text-xs">
+            <Button variant="ghost" size="sm" className="text-xs text-violet-400 hover:text-violet-300 hover:bg-violet-900/20">
               <FileTextIcon size={14} className="mr-1" /> View Resume
             </Button>
-            <Button variant="ghost" size="sm" className="text-xs">
+            <Button variant="ghost" size="sm" className="text-xs text-violet-400 hover:text-violet-300 hover:bg-violet-900/20">
               <ChartBarIcon size={14} className="mr-1" /> Score Details
             </Button>
           </div>
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-gray-500">
             Updated {new Date(candidate.lastUpdated).toLocaleDateString()}
           </div>
         </div>

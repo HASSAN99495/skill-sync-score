@@ -1,4 +1,3 @@
-
 export interface Candidate {
   id: string;
   name: string;
@@ -22,6 +21,8 @@ export interface ScoreBreakdown {
   educationMatch: number;
   keywordMatch: number;
   atsCompatibility: number;
+  sentimentScore?: number;
+  biasDetectionScore?: number;
 }
 
 export interface Skill {

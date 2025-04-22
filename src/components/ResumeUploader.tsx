@@ -90,84 +90,83 @@ const ResumeUploader: React.FC<ResumeUploaderProps> = ({ onResumesParsed }) => {
   }, [files, onResumesParsed]);
 
   return (
-    <Card className="mb-6">
-      <CardContent className="pt-6">
-        <div
-          className={`border-2 border-dashed rounded-lg p-6 text-center ${
-            isDragging ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300'
-          }`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-        >
-          <div className="flex flex-col items-center justify-center">
-            <UploadIcon 
-              size={36} 
-              className={`mb-2 ${isDragging ? 'text-indigo-500' : 'text-gray-400'}`} 
-            />
-            <p className="text-lg font-medium mb-1">Upload Resumes</p>
-            <p className="text-sm text-gray-500 mb-4">
-              Drag and drop PDF or DOCX files, or click to browse
-            </p>
+    <div className="mb-6">
+      <div
+        className={`border-2 border-dashed rounded-lg p-6 text-center ${
+          isDragging ? 'border-violet-500 bg-violet-900/20' : 'border-gray-700 bg-black/40'
+        }`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        <div className="flex flex-col items-center justify-center">
+          <UploadIcon 
+            size={36} 
+            className={`mb-2 ${isDragging ? 'text-violet-400' : 'text-gray-500'}`} 
+          />
+          <p className="text-lg font-medium mb-1 text-white">Upload Resumes</p>
+          <p className="text-sm text-gray-400 mb-4">
+            Drag and drop PDF or DOCX files, or click to browse
+          </p>
+          <Button 
+            variant="outline" 
+            onClick={() => document.getElementById('fileInput')?.click()}
+            className="border-violet-500/30 bg-black text-violet-400 hover:bg-violet-900/20"
+          >
+            Select Files
+          </Button>
+          <input
+            id="fileInput"
+            type="file"
+            multiple
+            accept=".pdf,.docx"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+        </div>
+      </div>
+      
+      {errorMessage && (
+        <div className="mt-4 p-3 bg-red-900/20 text-red-400 rounded-md text-sm border border-red-500/30">
+          {errorMessage}
+        </div>
+      )}
+      
+      {files.length > 0 && (
+        <div className="mt-4">
+          <p className="text-sm font-medium mb-2 text-violet-400">Selected Files ({files.length})</p>
+          <div className="space-y-2 max-h-40 overflow-y-auto p-1">
+            {files.map((file, index) => (
+              <div 
+                key={`${file.name}-${index}`}
+                className="flex items-center justify-between bg-black/60 border border-gray-800 p-2 rounded"
+              >
+                <div className="flex items-center">
+                  <FileIcon size={16} className="text-violet-400 mr-2" />
+                  <span className="text-sm truncate max-w-xs text-gray-300">{file.name}</span>
+                </div>
+                <button
+                  onClick={() => removeFile(index)}
+                  className="text-gray-400 hover:text-red-400"
+                  aria-label="Remove file"
+                >
+                  <XIcon size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex justify-end">
             <Button 
-              variant="outline" 
-              onClick={() => document.getElementById('fileInput')?.click()}
+              onClick={handleUpload} 
+              disabled={isLoading}
+              className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white"
             >
-              Select Files
+              {isLoading ? 'AI Processing...' : 'Upload & AI Analyze'}
             </Button>
-            <input
-              id="fileInput"
-              type="file"
-              multiple
-              accept=".pdf,.docx"
-              className="hidden"
-              onChange={handleFileChange}
-            />
           </div>
         </div>
-        
-        {errorMessage && (
-          <div className="mt-4 p-3 bg-red-50 text-red-600 rounded-md text-sm">
-            {errorMessage}
-          </div>
-        )}
-        
-        {files.length > 0 && (
-          <div className="mt-4">
-            <p className="text-sm font-medium mb-2">Selected Files ({files.length})</p>
-            <div className="space-y-2 max-h-40 overflow-y-auto p-1">
-              {files.map((file, index) => (
-                <div 
-                  key={`${file.name}-${index}`}
-                  className="flex items-center justify-between bg-gray-50 p-2 rounded"
-                >
-                  <div className="flex items-center">
-                    <FileIcon size={16} className="text-indigo-500 mr-2" />
-                    <span className="text-sm truncate max-w-xs">{file.name}</span>
-                  </div>
-                  <button
-                    onClick={() => removeFile(index)}
-                    className="text-gray-400 hover:text-gray-600"
-                    aria-label="Remove file"
-                  >
-                    <XIcon size={16} />
-                  </button>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 flex justify-end">
-              <Button 
-                onClick={handleUpload} 
-                disabled={isLoading}
-                className="bg-indigo-600 hover:bg-indigo-700"
-              >
-                {isLoading ? 'Processing...' : 'Upload & Analyze'}
-              </Button>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      )}
+    </div>
   );
 };
 

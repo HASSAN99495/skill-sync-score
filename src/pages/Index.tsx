@@ -10,8 +10,10 @@ import SkillsMatch from '@/components/SkillsMatch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { v4 as uuidv4 } from 'uuid';
-import { analyzeResume } from '@/utils/modelService';
+import { analyzeResumeWithOnlineModel } from '@/utils/onlineModelService';
 import { Candidate, JobDescription as JobDescriptionType, ParsedResume } from '@/types';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Index = () => {
   const { toast } = useToast();
@@ -53,7 +55,7 @@ const Index = () => {
             education: candidate.education
           };
           
-          const analysis = await analyzeResume(parsedResume, jd);
+          const analysis = await analyzeResumeWithOnlineModel(parsedResume, jd);
           
           return {
             ...candidate,
@@ -103,10 +105,15 @@ const Index = () => {
     setIsAnalyzing(true);
     
     try {
+      toast({
+        title: 'AI Analysis Started',
+        description: 'Using online AI model to analyze resumes...',
+      });
+      
       const newCandidates = await Promise.all(
         results.map(async ({ file, parsed }) => {
-          // Analyze resume against job description
-          const analysis = await analyzeResume(parsed, jobDescription);
+          // Analyze resume against job description with online AI model
+          const analysis = await analyzeResumeWithOnlineModel(parsed, jobDescription);
           
           // Create candidate object
           return {
@@ -129,7 +136,7 @@ const Index = () => {
       setCandidates(prev => [...prev, ...newCandidates]);
       
       toast({
-        title: 'Resumes Analyzed',
+        title: 'AI Analysis Complete',
         description: `${newCandidates.length} resumes have been analyzed successfully.`,
       });
     } catch (error) {
@@ -145,38 +152,48 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-black flex flex-col">
       <NavBar />
       
       <main className="flex-grow">
         <div className="dashboard-container">
-          <h1 className="text-2xl font-bold mb-6">Resume Screening Dashboard</h1>
+          <h1 className="text-2xl font-bold mb-6 gradient-heading">Resume AI Screening Dashboard</h1>
           
           {!jobDescription ? (
             <div className="mb-6">
-              <JobDescription onJobDescriptionChange={handleJobDescriptionChange} />
+              <Card className="glass-card overflow-hidden border-violet-500/20">
+                <CardHeader className="bg-gradient-to-r from-violet-900/30 to-indigo-900/30 pb-2">
+                  <CardTitle className="text-lg gradient-heading">Define Job Description</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <JobDescription onJobDescriptionChange={handleJobDescriptionChange} />
+                </CardContent>
+              </Card>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-1">
-                <Card className="mb-6">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-medium">Upload Resumes</CardTitle>
+                <Card className="mb-6 glass-card border-violet-500/20">
+                  <CardHeader className="pb-2 bg-gradient-to-r from-violet-900/30 to-indigo-900/30">
+                    <CardTitle className="text-lg gradient-heading">Upload Resumes</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ResumeUploader onResumesParsed={handleResumesParsed} />
+                    <div className="mt-4">
+                      <Badge className="bg-violet-600 hover:bg-violet-700 mb-2">AI-Powered Analysis</Badge>
+                      <ResumeUploader onResumesParsed={handleResumesParsed} />
+                    </div>
                     
-                    <div className="mt-4 pt-4 border-t">
-                      <h3 className="text-sm font-medium mb-2">Current Job Description</h3>
-                      <div className="bg-gray-50 p-3 rounded-md">
-                        <p className="text-sm font-medium">{jobDescription.title} at {jobDescription.company}</p>
-                        <p className="text-xs text-gray-500 mt-1">
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <h3 className="text-sm font-medium mb-2 text-violet-400">Current Job Description</h3>
+                      <div className="bg-black/40 border border-white/5 p-3 rounded-md">
+                        <p className="text-sm font-medium text-white">{jobDescription.title} at {jobDescription.company}</p>
+                        <p className="text-xs text-gray-400 mt-1">
                           {jobDescription.description.length > 150 
                             ? `${jobDescription.description.substring(0, 150)}...` 
                             : jobDescription.description}
                         </p>
                         <button 
-                          className="text-xs text-indigo-600 mt-2"
+                          className="text-xs text-violet-400 hover:text-violet-300 mt-2"
                           onClick={() => setJobDescription(null)}
                         >
                           Edit Job Description
@@ -187,37 +204,61 @@ const Index = () => {
                 </Card>
                 
                 <div className="h-[calc(100vh-450px)]">
-                  <CandidateList 
-                    candidates={candidates} 
-                    selectedCandidate={selectedCandidate}
-                    onSelectCandidate={setSelectedCandidate}
-                  />
+                  {isAnalyzing ? (
+                    <Card className="p-4 glass-card border-violet-500/20">
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-2">
+                          <Skeleton className="h-12 w-12 rounded-full bg-violet-800/20" />
+                          <div className="space-y-2">
+                            <Skeleton className="h-4 w-32 bg-violet-800/20" />
+                            <Skeleton className="h-3 w-24 bg-violet-800/20" />
+                          </div>
+                        </div>
+                        <Skeleton className="h-4 w-full bg-violet-800/20" />
+                        <Skeleton className="h-4 w-full bg-violet-800/20" />
+                        <div className="flex gap-2">
+                          <Skeleton className="h-8 w-20 rounded-full bg-violet-800/20" />
+                          <Skeleton className="h-8 w-20 rounded-full bg-violet-800/20" />
+                          <Skeleton className="h-8 w-20 rounded-full bg-violet-800/20" />
+                        </div>
+                      </div>
+                      <div className="mt-4 text-center text-sm text-violet-400 animate-pulse">
+                        AI is analyzing resumes...
+                      </div>
+                    </Card>
+                  ) : (
+                    <CandidateList 
+                      candidates={candidates} 
+                      selectedCandidate={selectedCandidate}
+                      onSelectCandidate={setSelectedCandidate}
+                    />
+                  )}
                 </div>
               </div>
               
               <div className="lg:col-span-2">
                 {selectedCandidate ? (
                   <div className="space-y-6">
-                    <Card>
-                      <CardHeader className="pb-2">
+                    <Card className="glass-card border-violet-500/20">
+                      <CardHeader className="pb-2 bg-gradient-to-r from-violet-900/30 to-indigo-900/30">
                         <CardTitle className="flex justify-between items-center">
-                          <span>{selectedCandidate.name}</span>
+                          <span className="text-white">{selectedCandidate.name}</span>
                           <span className={`
                             text-sm rounded-full px-2.5 py-1
-                            ${selectedCandidate.score >= 80 ? 'bg-green-100 text-green-800' : 
-                              selectedCandidate.score >= 60 ? 'bg-yellow-100 text-yellow-800' : 
-                                'bg-red-100 text-red-800'}
+                            ${selectedCandidate.score >= 80 ? 'bg-green-900/30 text-green-400' : 
+                              selectedCandidate.score >= 60 ? 'bg-yellow-900/30 text-yellow-400' : 
+                                'bg-red-900/30 text-red-400'}
                           `}>
                             {selectedCandidate.score}% Match
                           </span>
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <Tabs defaultValue="overview">
-                          <TabsList className="mb-4">
-                            <TabsTrigger value="overview">Overview</TabsTrigger>
-                            <TabsTrigger value="resume">Resume</TabsTrigger>
-                            <TabsTrigger value="skills">Skills Analysis</TabsTrigger>
+                        <Tabs defaultValue="overview" className="mt-2">
+                          <TabsList className="mb-4 bg-black/60">
+                            <TabsTrigger value="overview" className="text-white data-[state=active]:bg-violet-900/40">Overview</TabsTrigger>
+                            <TabsTrigger value="resume" className="text-white data-[state=active]:bg-violet-900/40">Resume</TabsTrigger>
+                            <TabsTrigger value="skills" className="text-white data-[state=active]:bg-violet-900/40">Skills Analysis</TabsTrigger>
                           </TabsList>
                           
                           <TabsContent value="overview" className="space-y-6">
@@ -231,11 +272,11 @@ const Index = () => {
                           </TabsContent>
                           
                           <TabsContent value="resume">
-                            <Card>
+                            <Card className="glass-card border-violet-500/20">
                               <CardContent className="pt-6">
                                 <div className="prose max-w-none">
-                                  <h3>Resume Content</h3>
-                                  <div className="bg-gray-50 p-4 rounded-md whitespace-pre-wrap font-mono text-sm">
+                                  <h3 className="text-white">Resume Content</h3>
+                                  <div className="bg-black/60 border border-white/5 p-4 rounded-md whitespace-pre-wrap font-mono text-sm text-gray-300">
                                     {selectedCandidate.resumeText}
                                   </div>
                                 </div>
@@ -250,41 +291,41 @@ const Index = () => {
                               preferredSkills={jobDescription.preferredSkills}
                             />
                             
-                            <Card>
-                              <CardHeader className="pb-2">
-                                <CardTitle className="text-lg font-medium">Experience</CardTitle>
+                            <Card className="glass-card border-violet-500/20">
+                              <CardHeader className="pb-2 bg-gradient-to-r from-violet-900/30 to-indigo-900/30">
+                                <CardTitle className="text-lg gradient-heading">Experience</CardTitle>
                               </CardHeader>
                               <CardContent>
                                 <div className="space-y-4">
                                   {selectedCandidate.experience.map((exp, index) => (
-                                    <div key={index} className="border-b pb-3 last:border-0">
+                                    <div key={index} className="border-b border-white/10 pb-3 last:border-0">
                                       <div className="flex justify-between">
-                                        <h4 className="font-medium">{exp.title}</h4>
-                                        <span className="text-sm text-gray-500">
+                                        <h4 className="font-medium text-white">{exp.title}</h4>
+                                        <span className="text-sm text-gray-400">
                                           {exp.startDate} - {exp.endDate || 'Present'}
                                         </span>
                                       </div>
-                                      <p className="text-sm text-gray-600 mt-1">{exp.company}</p>
-                                      <p className="text-sm mt-2">{exp.description}</p>
+                                      <p className="text-sm text-gray-400 mt-1">{exp.company}</p>
+                                      <p className="text-sm mt-2 text-gray-300">{exp.description}</p>
                                     </div>
                                   ))}
                                 </div>
                               </CardContent>
                             </Card>
                             
-                            <Card>
-                              <CardHeader className="pb-2">
-                                <CardTitle className="text-lg font-medium">Education</CardTitle>
+                            <Card className="glass-card border-violet-500/20">
+                              <CardHeader className="pb-2 bg-gradient-to-r from-violet-900/30 to-indigo-900/30">
+                                <CardTitle className="text-lg gradient-heading">Education</CardTitle>
                               </CardHeader>
                               <CardContent>
                                 <div className="space-y-4">
                                   {selectedCandidate.education.map((edu, index) => (
-                                    <div key={index} className="border-b pb-3 last:border-0">
+                                    <div key={index} className="border-b border-white/10 pb-3 last:border-0">
                                       <div className="flex justify-between">
-                                        <h4 className="font-medium">{edu.degree}</h4>
-                                        <span className="text-sm text-gray-500">{edu.year}</span>
+                                        <h4 className="font-medium text-white">{edu.degree}</h4>
+                                        <span className="text-sm text-gray-400">{edu.year}</span>
                                       </div>
-                                      <p className="text-sm text-gray-600">{edu.institution}</p>
+                                      <p className="text-sm text-gray-400">{edu.institution}</p>
                                     </div>
                                   ))}
                                 </div>
@@ -296,10 +337,10 @@ const Index = () => {
                     </Card>
                   </div>
                 ) : (
-                  <div className="h-64 flex items-center justify-center text-gray-500 border rounded-lg">
+                  <div className="h-64 flex items-center justify-center text-gray-400 border border-white/10 rounded-lg bg-black/40 backdrop-blur-sm">
                     {candidates.length > 0 
                       ? 'Select a candidate to view details'
-                      : 'Upload resumes to get started'}
+                      : 'Upload resumes to get started with AI analysis'}
                   </div>
                 )}
               </div>
